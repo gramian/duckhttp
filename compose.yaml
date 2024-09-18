@@ -1,0 +1,29 @@
+
+services:
+  "duckhttp":
+    build:
+      args:
+        DUCKDB: "1.1.0"
+        BENTO: "1.2.0"
+      context: "."
+      dockerfile_inline: |
+        FROM ubuntu:noble
+        ARG DUCKDB
+        ARG BENTO
+        RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
+        RUN useradd -m duckhttp
+        RUN wget -q https://github.com/duckdb/duckdb/releases/download/v$${DUCKDB}/duckdb_cli-linux-amd64.zip && unzip duckdb_cli-linux-amd64.zip && rm duckdb_cli-linux-amd64.zip && chmod +x duckdb
+        RUN wget -qO- https://github.com/warpstreamlabs/bento/releases/download/v$${BENTO}/bento_$${BENTO}_linux_amd64.tar.gz | tar -xzf-
+        COPY duckhttp.yaml ./
+        COPY wrapper.sh ./
+        HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD wget --no-verbose --tries=1 --spider http://localhost:4195/ready || exit 1
+        ENTRYPOINT ["./bento", "run", "./duckhttp.yaml"]
+      platforms:
+        - "linux/amd64"
+      tags:
+          - "gramian/duckhttp:latest"
+    image: "gramian/duckhttp:latest"
+    init: true
+    platform: "linux/amd64"
+    ports:
+        - "3000:3000"

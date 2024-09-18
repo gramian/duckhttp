@@ -1,0 +1,53 @@
+input:
+  http_server:
+    address: '0.0.0.0:3000'
+    path: '/{query}'
+    allowed_verbs:
+      - 'GET'
+    cors:
+      enabled: true
+      allowed_origins:
+        - '*'
+    timeout: '10s'
+    sync_response:
+      status: '${! metadata("status").or("200") }'
+      headers:
+        Content-Type: 'application/json'
+
+pipeline:
+  processors:
+    - mapping: |
+        root = metadata("query").string().or("")
+        root = if root != "" { root.trim_prefix("\"") }
+        root = if root != "" { root.trim_suffix("\"") }
+        root = if root != "" { root.trim() }
+
+    - switch:
+        - check: 'content() == "" || content() == ";" || content() == "favicon.ico"'
+          processors:
+            - mapping: 'root = []'
+
+        - check: 'content().has_prefix(".")'
+          processors:
+            - mapping: |
+                meta status = "400"
+                root.error = "Dot commands are not supported"
+
+        - processors:
+            - mapping: 'root = content().trim_suffix(";") + "; SELECT true AS eof;"'
+
+            - try:
+                - subprocess:
+                    name: './wrapper.sh'
+
+                - mapping: |
+                    root.results = content().decode("base64").parse_json()
+
+            - catch:
+                - mapping: |
+                    meta status = "500"
+                    root = {}
+                    root.error = error().replace("LINE","; LINE")
+
+output:
+  sync_response: {}
