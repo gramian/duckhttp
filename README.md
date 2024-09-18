@@ -1,6 +1,6 @@
 # DuckHTTP
 
-A minimal HTTP proxy server for DuckDB in 50 lines of YAML.
+DuckHTTP is a minimal HTTP proxy server for DuckDB in 50 lines of YAML.
 
 ## Getting Started
 
@@ -31,7 +31,7 @@ curl "http://localhost:3000/%22SELECT%20%27world%27%20AS%20hello%3B%22"
 * **Container:** The build process downloads DuckDB and the server.
 * **HTTP Server:** [`bento`](https://github.com/warpstreamlabs/bento) (but compatible to `connect`/`benthos`)
 * **Default Port:** `3000`
-* **Endpoint:** The query is placed right after the domain and wrapped in double quotes.
+* **Endpoint:** The query is placed in the URL right after the domain and wrapped in double quotes of a HTTP `GET` request.
 
 ## Known Issues
 
