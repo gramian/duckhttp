@@ -14,7 +14,7 @@ docker compose up --build
 ```http
 http://localhost:3000/"SELECT 'world' AS hello;"
 ```
-Try `Firefox` as it is very lenient on URL inputs and renders JSON response nicely.
+Try `Firefox` as it is very lenient on URL inputs and renders JSON responses nicely.
 
 ### 2b. Send query via terminal
 
@@ -38,4 +38,5 @@ curl "http://localhost:3000/%22SELECT%20%27world%27%20AS%20hello%3B%22"
 * Some HTTP Clients may need to URL-encode the query.
 * Earlier `compose` versions cannot handle inline Dockerfiles.
   In this case copy the content of the `dockerfile_inline` property into a file names `Dockerfile`.
+* `bento` is used instead of `benthos` as it provides pre-build binaries.
 * After an error in a query the subsequent query can contain results from the previous query.
