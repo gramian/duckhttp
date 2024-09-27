@@ -28,8 +28,8 @@ curl "http://localhost:3000/%22SELECT%20%27world%27%20AS%20hello%3B%22"
 ## Details
 
 * **Dependencies:** [`docker compose`](https://docs.docker.com/compose/)
-* **Container:** The build process downloads DuckDB and the server.
-* **HTTP Server:** [`bento`](https://github.com/warpstreamlabs/bento) (but compatible to `connect`/`benthos`)
+* **Container:** The image build process downloads DuckDB and the HTTP server.
+* **HTTP Server:** [`bento`](https://github.com/warpstreamlabs/bento) (also compatible to `connect`/`benthos`)
 * **DuckDB Client API:** The [CLI](https://duckdb.org/docs/api/cli/overview) is used via the [`subprocess`](https://docs.redpanda.com/redpanda-connect/components/processors/subprocess/) processor.
 * **Default Port:** `3000`
 * **Endpoint:** The query is placed in the URL right after the domain and wrapped in double quotes of a HTTP `GET` request.
@@ -38,6 +38,7 @@ curl "http://localhost:3000/%22SELECT%20%27world%27%20AS%20hello%3B%22"
   * `SELECT 1;` returns `[[{"1":1}]]`
   * `ANALYZE; SELECT 1;` returns `[[{"1":1}]]`
   * `SELECT 1; SELECT 2;` returns `[[{"1":1}],[{"2":2}]]`
+  * `ANALYZE;` returns `[]`
 
 ## Known Issues
 
